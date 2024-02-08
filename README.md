@@ -41,3 +41,4 @@ To see logs, open output in VS Code (`Ctrl + Shift + U`) and select `Run on Save
 ## Knowns issues
 - If you use `Alt + Tab` to switch to the targeted application and your cursor is not automatically in the writable area (ie. you can't type), the script will not work.
 - If there is an issue with the settings.json file, no error message will be displayed and the program won't execute. Log probably stays empty.
+- Encoding has to be the same. For example if you copy from `UTF-8 with BOM` to simple UTF-8 you will get strange characters.
