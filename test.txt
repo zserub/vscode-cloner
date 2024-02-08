@@ -1,0 +1,156 @@
+&ACCESS RV1
+DEF prog_10_PCB_Pick ( )
+   
+   ;Check conditions for program run
+   IF ((NOT home_done) OR (I_PCB_Have_1) or (I_PCB_Have_2)) THEN
+      
+      ;Error
+      MsgNotify("prog10_PCB_Pick: The launch conditions are not met !", "VM2000")
+      prog_Messages(10001)
+      
+   ENDIF
+
+   ;Move to Zone 3
+   prog_ZoneMove(3)
+   
+   ;switch to pcb gripper
+   prog_Grippers(80)
+   
+   SWITCH act_type
+      
+      CASE 1
+         ;call subroutine
+         TYPE1_PICK()
+         
+      CASE 2
+         TYPE1_PICK()
+         
+         ;CASE 3
+         ;TYPE1_PICK()
+         
+         ;CASE 4
+         ;TYPE1_PICK()
+         
+         ;CASE 5
+         ;TYPE1_PICK()
+         
+         ;CASE 6
+         ;TYPE1_PICK()
+         
+         ;CASE 7
+         ;TYPE1_PICK()
+         
+         ;CASE 8
+         ;TYPE1_PICK()
+         
+         ;CASE 9
+         ;TYPE1_PICK()
+         
+         ;CASE 10
+         ;TYPE1_PICK()
+         
+      DEFAULT
+         
+         ; Type error!
+         prog_Messages(10005)
+         
+   ENDSWITCH
+   
+   ;Set movement parameters FAST
+   ;FOLD Movement parameters
+      FOR for_cnt_1=1 TO 6
+         $VEL_AXIS[for_cnt_1]=axis_high_speed
+         $ACC_AXIS[for_cnt_1]=axis_acceleration
+      ENDFOR
+      $VEL.CP=tcp_high_speed
+      $ACC.CP=tcp_acceleration
+      $VEL.ORI1=150
+      $ACC.ORI1=100
+      $VEL.ORI2=200
+      $ACC.ORI2=100
+      $APO.CPTP=20
+      $APO.CVEL=100
+      $APO.CORI=50
+      $APO.CDIS=15
+      $ORI_TYPE=#VAR
+      $CIRC_TYPE=#BASE
+   ;ENDFOLD            
+   
+   ;MOVE CORNER POINTS
+   PTP XJ_Z3_CORN C_PTP
+   
+   ;move to next program start point
+   PTP XJ_Z5_CORN
+   
+END
+
+DEF TYPE1_PICK()
+   
+   ;Set movement parameters FAST
+   ;fold MOVEMENT PARAMETERS
+      $TOOL= TOOL_DATA[2]
+      $ACT_TOOL= 2
+      $LOAD= LOAD_DATA[2]
+      $BASE= BASE_DATA[1]
+      $ACT_BASE= 1
+      $IPO_MODE=#BASE
+      FOR for_cnt_1=1 TO 6
+         $VEL_AXIS[for_cnt_1]=axis_high_speed
+         $ACC_AXIS[for_cnt_1]=axis_acceleration
+      ENDFOR
+      $VEL.CP=tcp_high_speed
+      $ACC.CP=tcp_acceleration
+      $VEL.ORI1=150
+      $ACC.ORI1=100
+      $VEL.ORI2=200
+      $ACC.ORI2=100
+      $APO.CPTP=20
+      $APO.CVEL=100
+      $APO.CORI=50
+      $APO.CDIS=15
+      $ORI_TYPE=#VAR
+      $CIRC_TYPE=#BASE
+   ;ENDFOLD
+   
+   ;Move to above position
+   PTP XP_PCB_Pick_Target : {x 0.0, y 0.0, z -20.0, a 0.0, b 0.0, c 0.0}
+   
+   ;Set movement parameters SLOW
+   ;FOLD Movement parameters
+      FOR for_cnt_1=1 TO 6
+         $VEL_AXIS[for_cnt_1]=axis_slow_speed
+         $ACC_AXIS[for_cnt_1]=tcp_acceleration_low
+      ENDFOR
+      $VEL.CP=tcp_slow_speed
+      $ACC.CP=tcp_acceleration
+      $VEL.ORI1=150
+      $ACC.ORI1=100
+      $VEL.ORI2=200
+      $ACC.ORI2=100
+      $APO.CPTP=20
+      $APO.CVEL=100
+      $APO.CORI=50
+      $APO.CDIS=15
+      $ORI_TYPE=#VAR
+      $CIRC_TYPE=#BASE
+   ;ENDFOLD        
+   
+   ;move to target position
+   LIN XP_PCB_Pick_Target
+   
+   ;Stop advance run
+   WAIT SEC 0
+   
+   ;PCB GRIPPER ON
+   prog_Grippers(51)
+   
+   ;ADVANCE RUN STOP
+   WAIT SEC 0
+   
+   ;set load
+   $LOAD= LOAD_DATA[3]
+   
+   ;Move to above position
+   LIN XP_PCB_Pick_Target : {x 0.0, y 0.0, z -20.0, a 0.0, b 0.0, c 0.0}
+   
+END
